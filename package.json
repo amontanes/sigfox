@@ -12,7 +12,8 @@
     "@sap/hana-client": "^2.12"
   },
   "scripts": {
-    "start": "cds run"
+    "start": "cds run",
+    "build": "cds build/all --clean;cp gen/srv/srv/csn.json srv/gen/;cp -r gen/db/src/gen db/src"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
@@ -40,9 +41,6 @@
     }
   },
   "cds": {
-    "build": {
-      "target": "."
-    },
     "hana": {
       "deploy-format": "hdbtable"
     },

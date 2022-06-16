@@ -1,42 +1,97 @@
----
-_schema-version: '3.1'
+_schema-version: "3.1"
 ID: sigfox
+description: A simple CAP project.
 version: 1.0.0
-description: "A simple CAP project."
+modules:
+- name: sigfox-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: sigfox-db
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm-ci
+- name: sigfox-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: sigfox-db
+    properties:
+      TARGET_CONTAINER: ~{hdi-container-name}
+  - name: cross-container-service-1
+    group: SERVICE_REPLACEMENTS
+    properties:
+      key: ServiceName_1
+      service: ~{the-service-name}
+  - name: cross-container-service-2
+    group: SERVICE_REPLACEMENTS
+    properties:
+      key: ServiceName_2
+      service: ~{the-service-name}
+  - name: cross-container-service-3
+    group: SERVICE_REPLACEMENTS
+    properties:
+      key: ServiceName_3
+      service: ~{the-service-name}
+  - name: cross-container-service-4
+    group: SERVICE_REPLACEMENTS
+    properties:
+      key: ServiceName_4
+      service: ~{the-service-name}
+  - name: cross-container-service-5
+    group: SERVICE_REPLACEMENTS
+    properties:
+      key: ServiceName_5
+      service: ~{the-service-name}
+  parameters:
+    buildpack: nodejs_buildpack
+resources:
+- name: sigfox-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+  properties:
+    hdi-container-name: ${service-name}
+- name: cross-container-service-1
+  type: org.cloudfoundry.existing-service
+  parameters:
+    service-name: sigfox-db
+  properties:
+    the-service-name: ${service-name}
+- name: cross-container-service-2
+  type: org.cloudfoundry.existing-service
+  parameters:
+    service-name: sigfox-db
+  properties:
+    the-service-name: ${service-name}
+- name: cross-container-service-3
+  type: org.cloudfoundry.existing-service
+  parameters:
+    service-name: sigfox-db
+  properties:
+    the-service-name: ${service-name}
+- name: cross-container-service-4
+  type: org.cloudfoundry.existing-service
+  parameters:
+    service-name: sigfox-db
+  properties:
+    the-service-name: ${service-name}
+- name: cross-container-service-5
+  type: org.cloudfoundry.existing-service
+  parameters:
+    service-name: sigfox-db
+  properties:
+    the-service-name: ${service-name}
 parameters:
   enable-parallel-deployments: true
 build-parameters:
   before-all:
-    - builder: custom
-      commands:
-        - npx -p @sap/cds-dk cds build --production
-
-modules:
-  - name: sigfox-srv
-    type: nodejs
-    path: srv #gen/srv
-    parameters:
-      buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm-ci
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: sigfox-db
-
-  - name: sigfox-db-deployer
-    type: hdb
-    path: db #gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: sigfox-db
-
-resources:
-  - name: sigfox-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana # or 'hanatrial' on trial landscapes
-      service-plan: hdi-shared
+  - builder: custom
+    commands:
+    - npx -p @sap/cds-dk cds build --production

@@ -1,0 +1,13 @@
+@Server=http://localhost:4004
+@Authentication=Authorization:noauth
+
+POST {{Server}}/catalog/postData HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+"device": "42923D",
+"dist": "5",
+"caudal": "1.06530614",
+"rele": "1.0"
+}
